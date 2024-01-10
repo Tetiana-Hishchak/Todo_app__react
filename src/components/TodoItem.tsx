@@ -24,8 +24,11 @@ export const TodoItem: React.FC<Props> = ({
       setDoubleClick(false);
     }
 
-    if (newTitle.trim().length) {
+    if (!newTitle.trim().length) {
       onDelete(todo.id);
+      setDoubleClick(false);
+
+      return;
     }
 
     const newTodo = {

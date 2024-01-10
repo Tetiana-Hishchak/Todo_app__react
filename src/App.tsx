@@ -103,9 +103,6 @@ export const App: React.FC = () => {
     });
     setErrorMessage(ErrorMessages.EMPTY);
 
-    // eslint-disable-next-line no-console
-    console.log(tempTodo);
-
     return todosService.creatTodo({ title, completed, userId })
       .then((newTodo) => setTodos((current) => [...current, newTodo]))
       .catch((error) => {

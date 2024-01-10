@@ -3,7 +3,7 @@
 This project - is the React Todo App with API.
 
 # DEMO
-> Here is [the working example](https://Tetiana-Hishchak.github.io/Todo_app__react/)
+Here is [the working example](https://Tetiana-Hishchak.github.io/Todo_app__react/)
 
 ## Technologies Used.
 - **BEM (Block Element Modifier)**: for  CSS styles  management.
