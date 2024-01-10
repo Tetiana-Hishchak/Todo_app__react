@@ -56,6 +56,7 @@ export const Header: React.FC<Props> = ({
       {amountTodos !== 0 && (
         <button
           type="button"
+          aria-label="btn"
           className={classNames('todoapp__toggle-all', {
             active: amountActive === 0,
           })}

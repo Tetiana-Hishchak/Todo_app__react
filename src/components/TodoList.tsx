@@ -8,10 +8,11 @@ type Props = {
   tempTodo: Todo | null;
   isLoadingId: number | null;
   updateTodo: (updatedTodo: Todo) => Promise<void>;
+  loadingIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, onDelete = () => {}, tempTodo, isLoadingId, updateTodo,
+  todos, onDelete = () => {}, isLoadingId, updateTodo, loadingIds,
 }) => {
   return (
     <section className="todoapp__main">
@@ -27,29 +28,10 @@ export const TodoList: React.FC<Props> = ({
             onDelete={onDelete}
             isLoadingId={isLoadingId}
             updateTodo={updateTodo}
+            loadingIds={loadingIds}
           />
         </div>
       ))}
-
-      {tempTodo && (
-        <div className="todo">
-          <label className="todo__status-label">
-            <input type="checkbox" className="todo__status" />
-          </label>
-
-          <span className="todo__title">{tempTodo.title}</span>
-          <button type="button" className="todo__remove">×</button>
-
-          <div className={classNames(
-            'modal overlay',
-            { 'is-active': isLoadingId === tempTodo.id },
-          )}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
     </section>
 
   );

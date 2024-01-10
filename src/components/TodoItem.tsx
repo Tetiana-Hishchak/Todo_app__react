@@ -6,11 +6,12 @@ type Props = {
   todo: Todo;
   onDelete: (id: number) => void;
   isLoadingId: number | null;
+  loadingIds: number[];
   updateTodo: (updatedTodo: Todo) => Promise<void>;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, onDelete = () => {}, isLoadingId, updateTodo,
+  todo, onDelete = () => {}, isLoadingId, updateTodo, loadingIds,
 }) => {
   const [doubleClick, setDoubleClick] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
@@ -60,7 +61,6 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          checked
           onClick={handleCheckbox}
         />
       </label>
@@ -102,7 +102,10 @@ export const TodoItem: React.FC<Props> = ({
       {/* overlay will cover the todo while it is being updated  modal */}
       <div className={classNames(
         'modal overlay',
-        { 'is-active': isLoadingId === todo.id },
+        {
+          'is-active': isLoadingId === todo.id
+          || loadingIds.includes(todo.id),
+        },
       )}
       >
         <div className="modal-background has-background-white-ter" />

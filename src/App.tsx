@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import classNames from 'classnames';
 import React, {
   useCallback,
   useEffect, useMemo, useState,
@@ -40,6 +41,7 @@ export const App: React.FC = () => {
   = useState<Selected>(Selected.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoadingId, setIsLoadingId] = useState<number | null>(null);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -70,7 +72,10 @@ export const App: React.FC = () => {
   );
   const amountActive = activeTodos.length;
   const deleteTodo = (todoId: number) => {
-    setIsLoadingId(todoId);
+    setLoadingIds(current => [
+      ...current,
+      todoId,
+    ]);
 
     return todosService.deleteTodo(todoId)
       .then(() => setTodos(currentTodos => currentTodos
@@ -80,7 +85,10 @@ export const App: React.FC = () => {
         setErrorMessage(ErrorMessages.DELETE);
         throw error;
       })
-      .finally(() => setIsLoadingId(null));
+      .finally(() => {
+        setLoadingIds(current => current.filter(id => id !== todoId));
+        setIsLoadingId(null);
+      });
   };
 
   const addTodo = ({
@@ -94,6 +102,9 @@ export const App: React.FC = () => {
       completed,
     });
     setErrorMessage(ErrorMessages.EMPTY);
+
+    // eslint-disable-next-line no-console
+    console.log(tempTodo);
 
     return todosService.creatTodo({ title, completed, userId })
       .then((newTodo) => setTodos((current) => [...current, newTodo]))
@@ -110,6 +121,10 @@ export const App: React.FC = () => {
   const updateTodo = (updatedTodo: Todo) => {
     setErrorMessage(ErrorMessages.EMPTY);
     setIsLoadingId(updatedTodo.id);
+    setLoadingIds(current => [
+      ...current,
+      updatedTodo.id,
+    ]);
 
     return todosService.updateTodo(updatedTodo)
       .then(todo => {
@@ -126,7 +141,10 @@ export const App: React.FC = () => {
         setErrorMessage(ErrorMessages.UPDATE);
         throw error;
       })
-      .finally(() => setIsLoadingId(null));
+      .finally(() => {
+        setLoadingIds(current => current.filter(id => id !== updatedTodo.id));
+        setIsLoadingId(null);
+      });
   };
 
   const clearCompleted = useCallback(() => {
@@ -160,6 +178,26 @@ export const App: React.FC = () => {
             amountActive={amountActive}
             handleToggleTodosAll={handleToggleTodosAll}
           />
+
+          {tempTodo && (
+            <div className="todo">
+              <label className="todo__status-label">
+                <input type="checkbox" className="todo__status" />
+              </label>
+
+              <span className="todo__title">{tempTodo.title}</span>
+              <button type="button" className="todo__remove">×</button>
+
+              <div className={classNames(
+                'modal overlay',
+                { 'is-active': isLoadingId === tempTodo.id },
+              )}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          )}
           {todos.length !== 0 && (
             <>
               <TodoList
@@ -168,6 +206,7 @@ export const App: React.FC = () => {
                 tempTodo={tempTodo}
                 isLoadingId={isLoadingId}
                 updateTodo={updateTodo}
+                loadingIds={loadingIds}
               />
               <FilterTodos
                 amountActive={amountActive}
